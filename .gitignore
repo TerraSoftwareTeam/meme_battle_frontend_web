@@ -1,0 +1,51 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build
+build/
+out/
+coverage/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+promt.md
+
+# Reference files
+kotlin_auth_dtos.txt
+kotlin_dtos.txt
+kotlin_dtos_utf8.txt
+kotlin_more_screens.txt
+kotlin_packs_screens.txt
+kotlin_packs_ui.txt
+catalog_screen.txt

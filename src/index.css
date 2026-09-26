@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  :root {
+    --bg-base: 22 21 26;       /* #16151A */
+    --bg-surface: 30 29 36;    /* #1E1D24 */
+    --bg-elevated: 41 40 47;   /* #29282F */
+    
+    --border-color: 53 51 60;  /* #35333C */
+    
+    --text-primary: 245 243 240; /* #F5F3F0 */
+    --text-secondary: 168 165 175; /* #A8A5AF */
+    
+    --primary: 88 204 2;       /* #58CC02 */
+    --primary-shadow: 88 167 0; /* #58A700 */
+    
+    --secondary: 246 51 154;   /* #F6339A */
+    --secondary-shadow: 184 34 111; /* #B8226F */
+    
+    --danger: 226 75 74;       /* #E24B4A */
+    --warning: 255 176 32;     /* #FFB020 */
+
+    /* shadcn/ui defaults remapped */
+    --background: var(--bg-base);
+    --foreground: var(--text-primary);
+    --card: var(--bg-surface);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-elevated);
+    --popover-foreground: var(--text-primary);
+    --muted: var(--border-color);
+    --muted-foreground: var(--text-secondary);
+    --border: var(--border-color);
+    --input: var(--border-color);
+    --ring: var(--primary);
+    --radius: 1rem; /* 16px */
+  }
+
+  body {
+    background-color: rgb(var(--bg-base));
+    color: rgb(var(--text-primary));
+    font-family: 'Nunito', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; /* ExtraBold */
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Hide number input spinners and fix text color */
+  input[type="number"] {
+    color: white;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

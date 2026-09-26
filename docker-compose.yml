@@ -1,0 +1,17 @@
+name: meme_battle_frontend_react
+
+services:
+  memebattle-web-react:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${APP_IMAGE_NAME:-meme_battle_frontend_react}:${APP_IMAGE_TAG:-latest}
+    container_name: memebattle-web-react
+    restart: unless-stopped
+    ports:
+      - "${APP_EXTERNAL_PORT:-8085}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
