@@ -22,7 +22,7 @@ export function BaseLayout({ children }: { children: React.ReactNode }) {
       <header className="flex justify-between items-center h-16 border-b border-border/50 bg-surface/85 backdrop-blur-md w-full shrink-0 px-4 sm:px-6 sticky top-0 z-50 shadow-[0_2px_16px_rgba(0,0,0,0.35)]">
         {/* Telegram Social Button */}
         <a
-          href="https://t.me/"
+          href="https://t.me/skyfly_io"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-elevated/70 border border-border/70 hover:border-[#24A1DE]/60 hover:bg-[#24A1DE]/10 transition-all group select-none"
