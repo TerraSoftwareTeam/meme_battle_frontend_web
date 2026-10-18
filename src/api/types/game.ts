@@ -236,12 +236,36 @@ export interface CreateMemePackRequest {
   media_ids: number[];
 }
 
+export interface UpdateMemePackRequest {
+  name: string;
+  description?: string;
+  language_code: string;
+  safety_level: ContentSafetyLevel;
+  is_public: boolean;
+}
+
+export interface AddMemesToPackRequest {
+  media_ids: number[];
+}
+
 export interface CreateSituationPackRequest {
   name: string;
   description?: string;
   language_code: string;
   safety_level: ContentSafetyLevel;
   is_public: boolean;
+  prompts: string[];
+}
+
+export interface UpdateSituationPackRequest {
+  name: string;
+  description?: string;
+  language_code: string;
+  safety_level: ContentSafetyLevel;
+  is_public: boolean;
+}
+
+export interface AddSituationsToPackRequest {
   prompts: string[];
 }
 

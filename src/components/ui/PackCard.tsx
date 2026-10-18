@@ -1,6 +1,6 @@
-﻿import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, Pencil } from 'lucide-react';
 
 export type PackCardKind = 'memes' | 'situations';
 export type PackSafetyLevel = 'family_friendly' | 'spicy' | 'explicit';
@@ -11,11 +11,12 @@ export interface PackCardProps {
   safetyLevel: PackSafetyLevel;
   packType: PackCardKind;
   isOfficial?: boolean;
+  onEdit?: (e: React.MouseEvent) => void;
   onClick?: () => void;
   className?: string;
 }
 
-export function PackCard({ name, languageCode, safetyLevel, packType, isOfficial, onClick, className }: PackCardProps) {
+export function PackCard({ name, languageCode, safetyLevel, packType, isOfficial, onEdit, onClick, className }: PackCardProps) {
   const safetyInfo = {
     family_friendly: { text: '0+', bg: 'bg-[#43A047]', textCol: 'text-white' },
     spicy: { text: '16+', bg: 'bg-[#FFD54F]', textCol: 'text-[#3E2723]' },
@@ -32,6 +33,21 @@ export function PackCard({ name, languageCode, safetyLevel, packType, isOfficial
         className
       )}
     >
+      {/* Edit button for owned packs */}
+      {onEdit && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(e);
+          }}
+          className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-black/70 hover:bg-primary hover:text-[#16151A] text-white flex items-center justify-center backdrop-blur-md transition-colors shadow-md border border-white/10"
+          title="Редактировать пак"
+        >
+          <Pencil size={12} />
+        </button>
+      )}
+
       {/* Inner clip container to prevent card fan clipping */}
       <div className="absolute inset-0 rounded-[20px] overflow-hidden flex flex-col">
         {/* Official badge */}

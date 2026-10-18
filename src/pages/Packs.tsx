@@ -72,18 +72,22 @@ export function Packs() {
             <div className="text-text-secondary col-span-full">Загрузка...</div>
           ) : allPacks.length === 0 ? (
             <div className="text-text-secondary col-span-full">Паки не найдены</div>
-          ) : allPacks.map(pack => (
-            <PackCard
-              key={pack.id}
-              name={pack.name}
-              packType={pack.type}
-              languageCode={pack.language_code}
-              safetyLevel={pack.safety_level}
-              isOfficial={pack.is_official}
-              onClick={() => navigate(`/packs/${pack.id}?type=${pack.type}`)}
-              className={packId === pack.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-base' : ''}
-            />
-          ))}
+          ) : allPacks.map(pack => {
+            const isOwner = !!(user && pack.author_id === user.id);
+            return (
+              <PackCard
+                key={pack.id}
+                name={pack.name}
+                packType={pack.type}
+                languageCode={pack.language_code}
+                safetyLevel={pack.safety_level}
+                isOfficial={pack.is_official}
+                onEdit={isOwner ? () => navigate(`/packs/${pack.id}/edit?type=${pack.type}`) : undefined}
+                onClick={() => navigate(`/packs/${pack.id}?type=${pack.type}`)}
+                className={packId === pack.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-base' : ''}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useCreateMemePack, useCreateSituationPack, uploadImageMedia } from '@/api/hooks/usePacks';
-import { ArrowLeft, Image as ImageIcon, MessageSquare, Plus, X, Upload, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, MessageSquare, Plus, X, Upload, Check, AlertCircle, Globe, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ContentSafetyLevel } from '@/api/types/game';
 
@@ -286,21 +286,52 @@ export function CreatePack() {
               </div>
             </div>
 
-            {/* Public switch */}
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface border border-border">
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-white">Публичный пак</span>
-                <span className="text-xs text-text-secondary">Отображать в общем каталоге для всех игроков</span>
+            {/* Public / Private Selector */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-white">Доступность пака</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div
+                  onClick={() => setIsPublic(true)}
+                  className={cn(
+                    "cursor-pointer rounded-xl p-3.5 border-2 transition-all flex items-start gap-3 select-none",
+                    isPublic
+                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                      : "border-border bg-surface hover:border-text-secondary/60"
+                  )}
+                >
+                  <div className={cn("p-2 rounded-lg shrink-0 mt-0.5", isPublic ? "bg-primary text-[#16151A]" : "bg-elevated text-text-secondary")}>
+                    <Globe size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-white">Публичный</span>
+                      {isPublic && <Check size={16} className="text-primary shrink-0" />}
+                    </div>
+                    <p className="text-xs text-text-secondary mt-0.5">Виден всем игрокам в общем каталоге</p>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => setIsPublic(false)}
+                  className={cn(
+                    "cursor-pointer rounded-xl p-3.5 border-2 transition-all flex items-start gap-3 select-none",
+                    !isPublic
+                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                      : "border-border bg-surface hover:border-text-secondary/60"
+                  )}
+                >
+                  <div className={cn("p-2 rounded-lg shrink-0 mt-0.5", !isPublic ? "bg-primary text-[#16151A]" : "bg-elevated text-text-secondary")}>
+                    <Lock size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-white">Приватный</span>
+                      {!isPublic && <Check size={16} className="text-primary shrink-0" />}
+                    </div>
+                    <p className="text-xs text-text-secondary mt-0.5">Доступен только вам и в ваших играх</p>
+                  </div>
+                </div>
               </div>
-              <Button
-                type="button"
-                size="sm"
-                variant={isPublic ? 'primary' : 'surface'}
-                className={isPublic ? '!text-[#16151A] font-bold' : ''}
-                onClick={() => setIsPublic(prev => !prev)}
-              >
-                {isPublic ? 'Публичный' : 'Приватный'}
-              </Button>
             </div>
           </section>
 
