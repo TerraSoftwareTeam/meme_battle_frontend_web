@@ -1,4 +1,4 @@
-﻿export const API_BASE = import.meta.env.DEV ? '/api-proxy' : 'https://api.meme.skyfly.hackclub.app';
+export const API_BASE = import.meta.env.DEV ? '/api-proxy' : 'https://api.meme.skyfly.hackclub.app';
 
 let tokenPromise: Promise<string | null> | null = null;
 let tokenRefreshPromise: Promise<string | null> | null = null;
@@ -104,8 +104,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 async function doFetch<T>(endpoint: string, options: RequestInit, token: string | null): Promise<T> {
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...((options.headers as Record<string, string>) || {}),
   };
 
@@ -119,7 +120,14 @@ async function doFetch<T>(endpoint: string, options: RequestInit, token: string 
   });
 
   if (!response.ok) {
-    const error: any = new Error(`API Error: ${response.status} ${response.statusText}`);
+    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+    try {
+      const errJson = await response.json();
+      if (errJson?.message) errorMessage = errJson.message;
+    } catch {
+      // ignore json parse error
+    }
+    const error: any = new Error(errorMessage);
     error.status = response.status;
     throw error;
   }
@@ -135,6 +143,7 @@ async function doFetch<T>(endpoint: string, options: RequestInit, token: string 
 export const api = {
   get: <T>(endpoint: string, options?: RequestInit) => request<T>(endpoint, { ...options, method: 'GET' }),
   post: <T>(endpoint: string, body?: any, options?: RequestInit) => request<T>(endpoint, { ...options, method: 'POST', body: body ? JSON.stringify(body) : undefined }),
+  upload: <T>(endpoint: string, formData: FormData, options?: RequestInit) => request<T>(endpoint, { ...options, method: 'POST', body: formData }),
   patch: <T>(endpoint: string, body?: any, options?: RequestInit) => request<T>(endpoint, { ...options, method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
   delete: <T>(endpoint: string, options?: RequestInit) => request<T>(endpoint, { ...options, method: 'DELETE' }),
 };

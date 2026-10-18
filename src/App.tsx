@@ -7,6 +7,7 @@ import { Game } from './pages/Game/Game';
 import { Packs } from './pages/Packs';
 import { PackDetails } from './pages/PackDetails';
 import { Profile } from './pages/Profile';
+import { CreatePack } from './pages/CreatePack';
 import { ActiveGameGuard } from './components/ActiveGameGuard';
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/game/new" element={<CreateGame />} />
           <Route path="/game/:sessionId" element={<Game />} />
+          <Route path="/packs/new" element={<CreatePack />} />
           <Route path="/packs" element={<Packs />}>
             <Route path=":packId" element={<PackDetails />} />
           </Route>

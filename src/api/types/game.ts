@@ -227,6 +227,34 @@ export interface SituationPackDetailsResponse {
 
 // Requests & Responses
 
+export interface CreateMemePackRequest {
+  name: string;
+  description?: string;
+  language_code: string;
+  safety_level: ContentSafetyLevel;
+  is_public: boolean;
+  media_ids: number[];
+}
+
+export interface CreateSituationPackRequest {
+  name: string;
+  description?: string;
+  language_code: string;
+  safety_level: ContentSafetyLevel;
+  is_public: boolean;
+  prompts: string[];
+}
+
+export interface MediaAssetDto {
+  id: number;
+  owner_user_id: string;
+  url: string;
+  filename: string;
+  content_type: string;
+  size_bytes: number;
+  created_at: string;
+}
+
 export interface CreateGameRequest {
   mode: GameMode;
   name: string;
