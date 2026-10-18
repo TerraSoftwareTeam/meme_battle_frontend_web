@@ -24,7 +24,8 @@ export function WaitingPhase() {
 
   const maxPlayers = game.max_players || 10;
   const readyCount = players.filter(p => p.is_ready).length;
-  const allReady = players.length >= 1 && readyCount === players.length;
+  const hasMinPlayers = players.length >= 3;
+  const allReady = hasMinPlayers && readyCount === players.length;
   const canStart = isHost && allReady;
 
   const handleCopyLink = () => {
@@ -37,7 +38,7 @@ export function WaitingPhase() {
 
   return (
     <div className="flex flex-col items-center w-full max-w-md gap-5">
-      {/* Title & Lobby Name */}
+      {/* Title */}
       <motion.div
         className="text-center"
         initial={{ opacity: 0, y: -10 }}
@@ -47,12 +48,9 @@ export function WaitingPhase() {
         <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-elevated border border-border flex items-center justify-center text-primary">
           <Users size={28} />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black font-unbounded text-white mb-1">
+        <h1 className="text-2xl sm:text-3xl font-black font-unbounded text-white">
           Комната ожидания
         </h1>
-        <p className="text-text-secondary text-sm">
-          Лобби: <span className="text-white font-semibold">{game.name ?? game.id}</span>
-        </p>
       </motion.div>
 
       {/* Info Card */}
@@ -123,6 +121,8 @@ export function WaitingPhase() {
                 <Sparkles size={16} />
                 <span>Все игроки готовы! Хост может начать игру.</span>
               </div>
+            ) : !hasMinPlayers ? (
+              <span>Для начала игры нужно минимум 3 игрока (сейчас: {players.length})</span>
             ) : (
               <span>Ожидаем подтверждения готовности от всех участников</span>
             )}
@@ -174,7 +174,11 @@ export function WaitingPhase() {
       {isHost && !canStart && (
         <p className="text-warning text-xs text-center flex items-center justify-center gap-1.5">
           <AlertCircle size={14} />
-          <span>Для запуска игры все участники должны быть готовы</span>
+          <span>
+            {!hasMinPlayers
+              ? `Для начала игры нужно минимум 3 игрока (сейчас: ${players.length})`
+              : 'Для запуска игры все участники должны быть готовы'}
+          </span>
         </p>
       )}
 
