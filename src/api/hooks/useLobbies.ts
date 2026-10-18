@@ -36,7 +36,21 @@ export function useCreateLobby() {
 
 export function useJoinLobby() {
   return useMutation({
-    mutationFn: (data: { gameId: string, handle?: string }) => 
-      api.post<void>(`/games/${data.gameId}/join`, { handle: data.handle }),
+    mutationFn: async (data: { gameId: string; handle?: string }) => {
+      let lastErr: any = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          return await api.post<void>(`/games/${data.gameId}/join`, { handle: data.handle });
+        } catch (err: any) {
+          lastErr = err;
+          if (err?.status === 409 && attempt < 2) {
+            await new Promise(r => setTimeout(r, 350));
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw lastErr;
+    },
   });
 }

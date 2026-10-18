@@ -129,8 +129,23 @@ export function Game() {
         await fetchMe();
       }
 
-      // Join the game
-      await api.post(`/games/${sessionId}/join`, { handle });
+      // Join the game (with 1 retry on 409 concurrent conflict)
+      let lastErr: any = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          await api.post(`/games/${sessionId}/join`, { handle });
+          lastErr = null;
+          break;
+        } catch (err: any) {
+          lastErr = err;
+          if (err?.status === 409 && attempt < 2) {
+            await new Promise(r => setTimeout(r, 350));
+            continue;
+          }
+          throw err;
+        }
+      }
+      if (lastErr) throw lastErr;
 
       // Sync the active game cache so guard doesn't interfere
       queryClient.setQueryData(['active-game'], { game_id: sessionId, status: 'lobby' });
