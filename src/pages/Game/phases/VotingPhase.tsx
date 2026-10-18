@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useVoteCard } from '@/api/hooks/useGame';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 const trunc = (s: string, n = 12) => s.length > n ? s.slice(0, n) + '…' : s;
 
@@ -37,129 +38,152 @@ export function VotingPhase() {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-3xl gap-6 h-full animate-in fade-in zoom-in-95 duration-500">
-      {/* Prompt */}
-      <div className="text-center w-full">
-        <h2 className="text-2xl mb-3 font-unbounded text-primary-shadow">Голосование</h2>
-        <Card className="w-full min-h-24 flex items-center justify-center p-5 text-lg text-center bg-elevated border-primary/40 shadow-[0_0_20px_rgba(88,204,2,0.1)]">
-          {round.prompt?.text || round.prompt?.imageUrl ? (
-            round.prompt.imageUrl ? (
-              <img src={round.prompt.imageUrl} alt="Prompt" className="max-h-56 object-contain rounded-lg mx-auto" />
-            ) : (
-              <span style={{ color: '#fff' }} className="w-full text-center font-semibold leading-relaxed">{round.prompt.text}</span>
-            )
+    <div className="flex flex-col items-center w-full max-w-3xl gap-5 h-full">
+      {/* Header */}
+      <motion.div
+        className="text-center w-full"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h2 className="text-2xl font-black font-unbounded text-primary mb-3">
+          Голосование
+        </h2>
+        {/* Prompt */}
+        <div className="w-full min-h-16 flex items-center justify-center p-4 rounded-2xl border border-border bg-surface">
+          {round.prompt?.imageUrl ? (
+            <img src={round.prompt.imageUrl} alt="Prompt" className="max-h-48 object-contain rounded-xl mx-auto" />
+          ) : round.prompt?.text ? (
+            <span className="text-base sm:text-lg font-semibold leading-relaxed text-center text-white">
+              {round.prompt.text}
+            </span>
           ) : (
             <span className="text-text-secondary">Скрыто</span>
           )}
-        </Card>
-      </div>
+        </div>
+      </motion.div>
+
+      {/* Hint */}
+      <p className="text-xs sm:text-sm text-text-secondary font-semibold tracking-wide uppercase">
+        {round.has_voted ? 'Ожидаем остальных игроков...' : 'Выберите лучший ответ'}
+      </p>
 
       {/* Cards grid */}
-      <div className="flex-1 w-full overflow-y-auto hide-scrollbar flex flex-col items-center">
-        <p className="text-sm mb-4 text-center text-text-secondary font-semibold tracking-wide uppercase">
-          {round.has_voted ? '⏳ Ожидаем остальных...' : '👇 Выберите лучший ответ'}
-        </p>
-        <div className="flex flex-wrap justify-center gap-4 pb-12 px-2">
-          {submissions.map(sub => {
+      <div className="flex-1 w-full overflow-y-auto hide-scrollbar">
+        <motion.div
+          className="flex flex-wrap justify-center gap-3 sm:gap-4 pb-4 px-1"
+          initial="hidden"
+          animate="show"
+          variants={{ show: { transition: { staggerChildren: 0.05 } } }}
+        >
+          {submissions.map((sub) => {
             const realUserId = sub.user_id ?? cardAuthors[sub.card.id];
             const authorHandle = gameState.players.find(p => p.user_id === realUserId)?.handle;
             const realVoteCount = (cardVotes[sub.card.id] || []).length;
             const isSelected = selectedSubmissionId === sub.id;
             const isDisabled = sub.is_mine || round.has_voted;
-
             const isSituation = !sub.card.imageUrl && !!sub.card.text;
 
             return (
-              <button
+              <motion.button
                 key={sub.id}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.88, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 240, damping: 22 } }
+                }}
                 onClick={() => { if (!isDisabled) setSelectedSubmissionId(sub.id); }}
                 disabled={isDisabled}
+                whileTap={!isDisabled ? { scale: 0.97 } : {}}
+                type="button"
                 className={`
                   relative flex flex-col items-center justify-center
-                  ${isSituation
-                    ? 'w-[45%] min-w-[150px] max-w-[280px]'
-                    : 'w-[42%] min-w-[130px] max-w-[200px]'
-                  }
-                  aspect-[3/4] bg-elevated rounded-2xl border-2 overflow-hidden
-                  transition-all duration-200 focus:outline-none
+                  ${isSituation ? 'w-[45%] min-w-[140px] max-w-[260px]' : 'w-[42%] min-w-[120px] max-w-[190px]'}
+                  aspect-[3/4] rounded-2xl border-2 overflow-hidden
+                  transition-all duration-150 focus:outline-none
                   ${isSelected
-                    ? 'border-primary shadow-[0_0_24px_rgba(88,204,2,0.5)] scale-105 -translate-y-1'
+                    ? 'border-primary ring-2 ring-primary/40 bg-elevated -translate-y-1'
                     : sub.is_mine
-                      ? 'border-border/30 opacity-50 cursor-not-allowed'
+                      ? 'border-border/30 bg-elevated/40 opacity-50 cursor-not-allowed'
                       : round.has_voted
-                        ? 'border-border/50 cursor-not-allowed'
-                        : 'border-border hover:border-primary/50 hover:scale-[1.02] hover:-translate-y-0.5 cursor-pointer'
+                        ? 'border-border/40 bg-elevated/60 cursor-default'
+                        : 'border-border bg-surface hover:border-text-secondary/40 hover:-translate-y-0.5 cursor-pointer'
                   }
                 `}
               >
-                {/* Card content */}
+                {/* Content */}
                 {sub.card.imageUrl ? (
-                  <img src={sub.card.imageUrl} alt="" className="w-full h-full object-contain p-2 mx-auto" />
+                  <img src={sub.card.imageUrl} alt="" className="w-full h-full object-contain p-2" />
                 ) : (
-                  <div
-                    className="p-3 w-full h-full overflow-y-auto hide-scrollbar flex items-center justify-center text-center text-xs md:text-sm font-semibold leading-relaxed"
-                    style={{ color: '#ffffff' }}
-                  >
+                  <div className="p-3 w-full h-full overflow-y-auto hide-scrollbar flex items-center justify-center text-center text-xs sm:text-sm font-semibold leading-relaxed text-white">
                     {sub.card.text}
                   </div>
                 )}
 
-                {/* Author badge — top left */}
+                {/* Author badge */}
                 {authorHandle && (
                   <div className="absolute top-2 left-2 z-10 pointer-events-none">
-                    <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 bg-black/70 text-white rounded-full backdrop-blur-sm">
+                    <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 bg-black/75 text-white rounded-full backdrop-blur-sm">
                       {trunc(authorHandle)}
                     </span>
                   </div>
                 )}
 
-                {/* Vote counter — top right */}
-                {realVoteCount > 0 && (
-                  <div className="absolute top-2 right-2 z-10 pointer-events-none">
-                    <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 bg-primary text-black rounded-full flex items-center gap-1 shadow-lg">
-                      🔥 {realVoteCount}
-                    </span>
+                {/* Selected Check Badge */}
+                {isSelected && (
+                  <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary text-[#16151A] flex items-center justify-center shadow-md pointer-events-none z-10">
+                    <Check size={14} strokeWidth={3} />
                   </div>
                 )}
 
+                {/* Vote count badge */}
+                <AnimatePresence>
+                  {realVoteCount > 0 && (
+                    <motion.div
+                      key={realVoteCount}
+                      initial={{ scale: 0.6, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute bottom-2 right-2 z-10 pointer-events-none"
+                    >
+                      <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 bg-primary text-[#16151A] rounded-full shadow-md">
+                        {realVoteCount} {realVoteCount === 1 ? 'голос' : realVoteCount < 5 ? 'голоса' : 'голосов'}
+                      </span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* "Your answer" overlay */}
                 {sub.is_mine && (
-                  <div className="absolute inset-0 bg-black/55 flex items-center justify-center pointer-events-none rounded-[14px]">
-                    <span className="text-white font-bold text-sm px-3 py-1.5 bg-black/40 rounded-full border border-white/20">
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none rounded-[14px]">
+                    <span className="text-white font-bold text-xs sm:text-sm px-3 py-1.5 bg-black/50 rounded-full border border-white/20">
                       Ваш ответ
                     </span>
                   </div>
                 )}
 
-                {/* Selected ring */}
-                {isSelected && (
-                  <div className="absolute inset-0 border-[3px] border-primary rounded-[14px] pointer-events-none" />
-                )}
-
-                {/* "Your vote" label after voting */}
+                {/* Voted label */}
                 {isSelected && round.has_voted && (
                   <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none z-10">
-                    <span className="text-primary font-bold bg-black/80 px-2 py-0.5 rounded-full text-xs">
-                      ✓ Ваш голос
+                    <span className="text-primary font-bold bg-black/80 px-2.5 py-0.5 rounded-full text-xs">
+                      Ваш выбор
                     </span>
                   </div>
                 )}
-              </button>
+              </motion.button>
             );
           })}
-        </div>
+        </motion.div>
       </div>
 
       {/* Vote button */}
       <div className="w-full max-w-sm shrink-0">
         <Button
           size="lg"
-          className="w-full h-14 text-lg shadow-xl"
+          className={`w-full h-14 text-lg font-bold ${!round.has_voted ? '!text-[#16151A]' : ''}`}
           disabled={!selectedSubmissionId || isPending || round.has_voted}
           onClick={handleVote}
           variant={round.has_voted ? 'surface' : 'primary'}
         >
-          {round.has_voted ? '✓ Голос принят' : isPending ? 'Отправка...' : 'Голосовать'}
+          {round.has_voted ? 'Голос принят' : isPending ? 'Отправка...' : 'Проголосовать'}
         </Button>
       </div>
     </div>

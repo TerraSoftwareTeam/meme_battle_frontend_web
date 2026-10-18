@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSubmitCard } from '@/api/hooks/useGame';
 import { useAuthStore } from '@/store/authStore';
-
+import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 export function SubmittingPhase() {
   const gameState = useGameStore(state => state.gameState);
@@ -36,93 +36,132 @@ export function SubmittingPhase() {
 
   if (hasSubmitted) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 animate-in fade-in duration-500">
-        <div className="text-5xl">⏳</div>
-        <h2 className="text-2xl font-bold">Ждём остальных игроков...</h2>
-        <p className="text-text-secondary text-center">Вы уже сделали свой выбор</p>
-      </div>
+      <motion.div
+        className="flex flex-col items-center justify-center h-full gap-4"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+      >
+        <div className="w-12 h-12 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center mb-1">
+          <Check size={24} strokeWidth={3} />
+        </div>
+        <h2 className="text-2xl font-black font-unbounded text-white">Ответ принят</h2>
+        <p className="text-text-secondary text-center text-sm">Ждём, пока остальные игроки сделают выбор...</p>
+        <div className="flex gap-1.5 mt-2">
+          {[0, 1, 2].map(i => (
+            <motion.div
+              key={i}
+              className="w-2.5 h-2.5 rounded-full bg-primary"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.3, 1, 0.3] }}
+              transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
+            />
+          ))}
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-3xl gap-6 h-full animate-in fade-in zoom-in-95 duration-500">
-      {/* Prompt */}
-      <div className="text-center w-full">
-        <h2 className="text-2xl mb-3 font-unbounded text-primary-shadow">
-          Раунд {round.round_number}
-        </h2>
-        <Card className="w-full min-h-24 flex items-center justify-center p-5 text-lg text-center border-primary/60 bg-primary/10 shadow-[0_0_20px_rgba(88,204,2,0.12)]">
-          {round.prompt?.text || round.prompt?.imageUrl ? (
-            round.prompt.imageUrl ? (
-              <img src={round.prompt.imageUrl} alt="Prompt" className="max-h-56 object-contain rounded-lg mx-auto" />
-            ) : (
-              <span style={{ color: '#ffffff' }} className="w-full text-center font-semibold leading-relaxed">
-                {round.prompt.text}
-              </span>
-            )
+    <div className="flex flex-col items-center w-full max-w-3xl gap-5 h-full">
+      {/* Header */}
+      <motion.div
+        className="text-center w-full"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Раунд</span>
+          <span className="text-lg font-black font-unbounded text-primary">{round.round_number}</span>
+        </div>
+        {/* Prompt card */}
+        <div className="w-full min-h-16 flex items-center justify-center p-4 rounded-2xl border border-border bg-surface">
+          {round.prompt?.imageUrl ? (
+            <img src={round.prompt.imageUrl} alt="Prompt" className="max-h-48 object-contain rounded-xl mx-auto" />
+          ) : round.prompt?.text ? (
+            <span className="text-base sm:text-lg font-semibold leading-relaxed text-center text-white">
+              {round.prompt.text}
+            </span>
           ) : (
             <span className="text-text-secondary">Скрыто</span>
           )}
-        </Card>
-      </div>
+        </div>
+      </motion.div>
+
+      <p className="text-xs sm:text-sm text-text-secondary font-semibold tracking-wide uppercase">
+        Выберите карту из руки
+      </p>
 
       {/* Hand */}
-      <div className="flex-1 w-full overflow-y-auto hide-scrollbar flex flex-col items-center">
-        <p className="text-sm mb-4 text-center text-text-secondary font-semibold tracking-wide uppercase">
-          👆 Выберите карту из руки
-        </p>
-        <div className="flex flex-wrap justify-center gap-4 pb-12 px-2">
-          {my_hand.map(card => {
+      <div className="flex-1 w-full overflow-y-auto hide-scrollbar">
+        <motion.div
+          className="flex flex-wrap justify-center gap-3 sm:gap-4 pb-4 px-1"
+          initial="hidden"
+          animate="show"
+          variants={{ show: { transition: { staggerChildren: 0.04 } } }}
+        >
+          {my_hand.map((card) => {
             const isSelected = selectedCardId === card.id;
-            // Situation text cards need more space
             const isSituation = !card.imageUrl && !!card.text;
             return (
-              <button
+              <motion.button
                 key={card.id}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.88, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 240, damping: 22 } }
+                }}
                 onClick={() => setSelectedCardId(card.id)}
+                whileTap={{ scale: 0.97 }}
+                type="button"
                 className={`
                   relative flex flex-col items-center justify-center
-                  ${isSituation
-                    ? 'w-[45%] min-w-[140px] max-w-[220px]'
-                    : 'w-[28%] min-w-[100px] max-w-[150px]'
-                  }
-                  aspect-[3/4] bg-elevated rounded-2xl border-2 overflow-hidden
-                  transition-all duration-200 focus:outline-none
+                  ${isSituation ? 'w-[45%] min-w-[130px] max-w-[210px]' : 'w-[28%] min-w-[95px] max-w-[145px]'}
+                  aspect-[3/4] rounded-2xl border-2 overflow-hidden
+                  transition-all duration-150 focus:outline-none cursor-pointer
                   ${isSelected
-                    ? 'border-primary shadow-[0_0_24px_rgba(88,204,2,0.5)] scale-105 -translate-y-2'
-                    : 'border-border hover:border-primary/40 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer'
+                    ? 'border-primary ring-2 ring-primary/40 bg-elevated -translate-y-1'
+                    : 'border-border bg-surface hover:border-text-secondary/40 hover:-translate-y-0.5'
                   }
                 `}
               >
                 {card.imageUrl ? (
-                  <img src={card.imageUrl} alt="" className="w-full h-full object-contain p-2 mx-auto" />
+                  <img src={card.imageUrl} alt="" className="w-full h-full object-contain p-2" />
                 ) : (
-                  <div
-                    className="p-3 w-full h-full overflow-y-auto hide-scrollbar flex items-center justify-center text-center text-xs md:text-sm font-semibold leading-relaxed"
-                    style={{ color: '#ffffff' }}
-                  >
+                  <div className="p-3 w-full h-full overflow-y-auto hide-scrollbar flex items-center justify-center text-center text-xs sm:text-sm font-semibold leading-relaxed text-white">
                     {card.text}
                   </div>
                 )}
 
+                {/* Selected Check Badge */}
                 {isSelected && (
-                  <div className="absolute inset-0 border-[3px] border-primary rounded-[14px] pointer-events-none" />
+                  <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary text-[#16151A] flex items-center justify-center shadow-md pointer-events-none">
+                    <Check size={14} strokeWidth={3} />
+                  </div>
                 )}
-              </button>
+
+                {isSelected && (
+                  <div className="absolute bottom-2 left-0 right-0 flex justify-center z-10 pointer-events-none">
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 bg-primary text-[#16151A] rounded-full shadow-sm">
+                      Выбрано
+                    </span>
+                  </div>
+                )}
+              </motion.button>
             );
           })}
-        </div>
+        </motion.div>
       </div>
 
-      {/* Submit button */}
+      {/* Submit */}
       <div className="w-full max-w-sm shrink-0">
         <Button
           size="lg"
-          className="w-full h-14 text-lg shadow-xl"
+          variant="primary"
+          className="w-full h-14 text-lg font-bold !text-[#16151A]"
           disabled={!selectedCardId || isPending}
           onClick={handleSubmit}
         >
-          {isPending ? 'Отправка...' : '▶ Выбрать карту'}
+          {isPending ? 'Отправка...' : 'Сыграть карту'}
         </Button>
       </div>
     </div>

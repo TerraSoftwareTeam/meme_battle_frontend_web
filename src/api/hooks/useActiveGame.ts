@@ -19,7 +19,9 @@ export function useActiveGame() {
         throw err;
       }
     },
-    staleTime: 0,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: false,
   });
 }

@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { useMemePack, useSituationPack } from '@/api/hooks/usePacks';
 
 export function PackDetails() {
@@ -38,17 +38,33 @@ export function PackDetails() {
 
   return (
     <div className="flex flex-col h-full bg-surface md:rounded-2xl md:border border-border shadow-xl overflow-hidden">
-      <div className="flex items-center gap-4 p-4 border-b border-border bg-black/20 shrink-0">
-        <button 
-          className="md:hidden p-2 -ml-2 rounded-full hover:bg-black/20 transition-colors"
-          onClick={() => navigate('/packs')}
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <div className="flex flex-col overflow-hidden">
-          <h2 className="text-xl font-bold truncate">{pack.name}</h2>
-          <span className="text-xs text-text-secondary">{itemsCount} элементов</span>
+      <div className="flex items-center justify-between p-4 border-b border-border bg-black/20 shrink-0 gap-3">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <Button 
+            type="button"
+            variant="surface"
+            size="sm"
+            className="md:hidden w-9 h-9 min-h-[36px] p-0 rounded-xl shrink-0"
+            onClick={() => navigate('/packs')}
+            title="Назад к пакам"
+          >
+            <ArrowLeft size={16} />
+          </Button>
+          <div className="flex flex-col overflow-hidden">
+            <h2 className="text-lg sm:text-xl font-bold truncate text-white">{pack.name}</h2>
+            <span className="text-xs text-text-secondary">{itemsCount} элементов</span>
+          </div>
         </div>
+        <Button
+          type="button"
+          variant="surface"
+          size="sm"
+          className="hidden md:flex w-9 h-9 min-h-[36px] p-0 rounded-xl shrink-0"
+          onClick={() => navigate('/packs')}
+          title="Закрыть панель"
+        >
+          <X size={16} />
+        </Button>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-base">

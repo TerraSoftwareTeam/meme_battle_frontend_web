@@ -77,6 +77,8 @@ export interface GameDto {
   version: number;
   host_id?: string;
   host_user_id?: string;
+  max_players?: number;
+  max_rounds?: number;
 }
 
 export interface BackendGameCard {

@@ -20,7 +20,7 @@ export function useCreateGame() {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['games'] });
+      queryClient.invalidateQueries({ queryKey: ['lobbies'] });
     }
   });
 }

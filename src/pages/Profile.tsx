@@ -2,6 +2,7 @@ import { BaseLayout } from '@/components/layout/BaseLayout';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 export function Profile() {
   const { user, logout } = useAuthStore();
@@ -9,8 +10,20 @@ export function Profile() {
 
   return (
     <BaseLayout>
-      <div className="w-full max-w-md flex flex-col gap-6 pt-8">
-        <h1 className="text-3xl font-bold text-primary-shadow font-unbounded">Профиль</h1>
+      <div className="w-full max-w-md flex flex-col gap-6 pt-4 sm:pt-8">
+        <div className="flex items-center gap-3.5">
+          <Button
+            type="button"
+            variant="surface"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="w-10 h-10 min-h-[40px] p-0 rounded-xl shrink-0"
+            title="Назад"
+          >
+            <ArrowLeft size={18} />
+          </Button>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white font-unbounded">Профиль</h1>
+        </div>
 
         {user ? (
           <div className="flex flex-col gap-4">

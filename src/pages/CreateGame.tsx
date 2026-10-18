@@ -8,10 +8,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCreateGame } from '@/api/hooks/useCreateGame';
 import { useMemePacks, useSituationPacks } from '@/api/hooks/usePacks';
 import { GameMode } from '@/api/types/game';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PackCard, PackCardKind } from '@/components/ui/PackCard';
-import { useAuthStore } from '@/store/authStore';
+
 
 function PackSelectionModal({ 
   isOpen, 
@@ -64,7 +64,6 @@ export function CreateGame() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { mutate: createGame, isPending } = useCreateGame();
-  const { isGuest } = useAuthStore();
   
   const { data: memePacks } = useMemePacks();
   const { data: situationPacks } = useSituationPacks();
@@ -102,7 +101,7 @@ export function CreateGame() {
     setSelectedSituationPacks(next);
   };
 
-  const isFormValid = lobbyName.trim().length > 0 && selectedMemePacks.size > 0 && selectedSituationPacks.size > 0;
+  const isFormValid = lobbyName.trim().length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,9 +125,21 @@ export function CreateGame() {
   return (
     <BaseLayout>
       <form onSubmit={handleSubmit} className="w-full max-w-3xl flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
-        <div>
-          <h1 className="text-3xl font-bold text-primary-shadow font-unbounded mb-2">Создание игры</h1>
-          <p className="text-text-secondary">Настройте правила и выберите паки для игры.</p>
+        <div className="flex items-center gap-3.5">
+          <Button
+            type="button"
+            variant="surface"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 min-h-[40px] p-0 rounded-xl shrink-0"
+            title="Назад"
+          >
+            <ArrowLeft size={18} />
+          </Button>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white font-unbounded">Создание игры</h1>
+            <p className="text-xs sm:text-sm text-text-secondary">Настройте правила и выберите паки для игры.</p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -148,19 +159,17 @@ export function CreateGame() {
                   className="bg-surface"
                 />
               </div>
-              {isGuest && (
-                <div>
-                  <label className="text-sm text-text-secondary mb-1 block">Ваш ник в игре</label>
-                  <Input
-                    type="text"
-                    placeholder="meme_lord"
-                    value={handle}
-                    onChange={e => setHandle(e.target.value)}
-                    maxLength={20}
-                    className="bg-surface"
-                  />
-                </div>
-              )}
+              <div>
+                <label className="text-sm text-text-secondary mb-1 block">Ваш ник в игре</label>
+                <Input
+                  type="text"
+                  placeholder="meme_lord"
+                  value={handle}
+                  onChange={e => setHandle(e.target.value)}
+                  maxLength={20}
+                  className="bg-surface"
+                />
+              </div>
             </div>
           </section>
 
@@ -168,7 +177,7 @@ export function CreateGame() {
             <h2 className="text-xl font-bold">Режим игры</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card 
-                className={cn("p-4 cursor-pointer border-2 transition-all", mode === 'situation_to_meme' ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(88,204,2,0.15)] scale-[1.02]" : "border-border hover:border-text-secondary")}
+                className={cn("p-4 cursor-pointer border-2 transition-all", mode === 'situation_to_meme' ? "border-primary bg-primary/10 ring-2 ring-primary/30 scale-[1.01]" : "border-border hover:border-text-secondary")}
                 onClick={() => setMode('situation_to_meme')}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -179,7 +188,7 @@ export function CreateGame() {
               </Card>
 
               <Card 
-                className={cn("p-4 cursor-pointer border-2 transition-all", mode === 'meme_to_situation' ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(88,204,2,0.15)] scale-[1.02]" : "border-border hover:border-text-secondary")}
+                className={cn("p-4 cursor-pointer border-2 transition-all", mode === 'meme_to_situation' ? "border-primary bg-primary/10 ring-2 ring-primary/30 scale-[1.01]" : "border-border hover:border-text-secondary")}
                 onClick={() => setMode('meme_to_situation')}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -198,7 +207,7 @@ export function CreateGame() {
                 <label className="text-sm text-text-secondary mb-1 block">Количество раундов</label>
                 <Input 
                   type="number" 
-                  min={1} max={20} 
+                  min={1}
                   value={maxRounds} 
                   onChange={e => setMaxRounds(parseInt(e.target.value) || 5)} 
                   className="bg-surface"
@@ -208,7 +217,7 @@ export function CreateGame() {
                 <label className="text-sm text-text-secondary mb-1 block">Карт в руке</label>
                 <Input 
                   type="number" 
-                  min={3} max={15} 
+                  min={1}
                   value={handSize} 
                   onChange={e => setHandSize(parseInt(e.target.value) || 5)} 
                   className="bg-surface"

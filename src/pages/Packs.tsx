@@ -6,6 +6,7 @@ import { useNavigate, Outlet, useParams } from 'react-router-dom';
 import { useMemePacks, useSituationPacks } from '@/api/hooks/usePacks';
 import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
+import { ArrowLeft } from 'lucide-react';
 
 type PackFilter = 'all' | 'my' | 'memes' | 'situations';
 
@@ -39,8 +40,20 @@ export function Packs() {
 
   const masterGrid = (
     <div className="flex flex-col gap-4 h-full w-full overflow-hidden">
-      <div className="flex justify-between items-center shrink-0">
-        <h1 className="text-3xl text-primary-shadow font-bold">Каталог паков</h1>
+      <div className="flex justify-between items-center shrink-0 gap-3">
+        <div className="flex items-center gap-3.5">
+          <Button
+            type="button"
+            variant="surface"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="w-10 h-10 min-h-[40px] p-0 rounded-xl shrink-0"
+            title="В главное меню"
+          >
+            <ArrowLeft size={18} />
+          </Button>
+          <h1 className="text-2xl sm:text-3xl text-white font-bold font-unbounded">Каталог паков</h1>
+        </div>
         <Button variant="secondary" className="w-auto" size="sm" onClick={() => navigate('/packs/new')}>
           Создать пак
         </Button>

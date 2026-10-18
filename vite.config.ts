@@ -17,6 +17,15 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-proxy/, ''),
       },
+      '/ws-proxy': {
+        target: 'wss://realtime.meme.skyfly.hackclub.app',
+        ws: true,
+        changeOrigin: true,
+        headers: {
+          Origin: 'https://new.meme.skyfly.hackclub.app',
+        },
+        rewrite: (path) => path.replace(/^\/ws-proxy/, ''),
+      },
     },
   },
 })

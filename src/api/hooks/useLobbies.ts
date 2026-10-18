@@ -1,12 +1,25 @@
-﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../client';
-import { ActiveGamesResponseDto, CreateGameRequest, GameDto } from '../types/game';
+import { ActiveGamesResponseDto, CreateGameRequest, GameDto, LobbiesWsTokenDto } from '../types/game';
 
 export function useLobbies() {
   return useQuery({
     queryKey: ['lobbies'],
     queryFn: () => api.get<ActiveGamesResponseDto>('/games'),
-    refetchInterval: 5000, // Poll every 5s for updates to lobbies
+    staleTime: 1000,
+    refetchInterval: 2000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+  });
+}
+
+export function useLobbiesWsToken() {
+  return useQuery({
+    queryKey: ['lobbies-ws-token'],
+    queryFn: () => api.get<LobbiesWsTokenDto>('/games/catalog/ws-token'),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 }
 

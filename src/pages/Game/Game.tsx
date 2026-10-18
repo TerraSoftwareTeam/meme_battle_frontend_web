@@ -14,10 +14,11 @@ import { JoinLobbyModal } from '@/components/game/JoinLobbyModal';
 import { RoundWinnerDialog } from '@/components/game/RoundWinnerDialog';
 
 import { useGameWsToken, useGameState as useGameStateApi } from '@/api/hooks/useGame';
-import { setupGameSubscriptions } from '@/api/centrifuge';
+import { setupGameSubscriptions, socketManager } from '@/api/centrifuge';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/api/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { fetchGameState } from '@/store/gameStore';
 
 /**
  * Join-on-link flow:
@@ -45,23 +46,48 @@ export function Game() {
     initialGameState ? sessionId : undefined
   );
 
-  // Track round changes to show winner dialog
-  const [showWinnerDialog, setShowWinnerDialog] = useState(false);
-  const [winnerName, setWinnerName] = useState<string | undefined>(undefined);
+  const roundWinnerAnnouncement = useGameStore(state => state.roundWinnerAnnouncement);
+  const clearRoundWinnerAnnouncement = useGameStore(state => state.clearRoundWinnerAnnouncement);
 
+  // Sync snapshot winner announcement if page loaded mid-finished phase
   useEffect(() => {
-    if (gameState?.round?.winner_user_id) {
+    if (gameState?.round?.phase === 'finished' && gameState.round.winner_user_id && !roundWinnerAnnouncement) {
       const winner = gameState.players.find(p => p.user_id === gameState.round!.winner_user_id);
-      if (winner) setWinnerName(winner.handle);
+      useGameStore.setState({
+        roundWinnerAnnouncement: {
+          roundNumber: gameState.round.round_number,
+          winnerUserId: gameState.round.winner_user_id,
+          winnerName: winner?.handle || 'Игрок',
+        }
+      });
     }
-  }, [gameState?.round?.winner_user_id, gameState?.players]);
+  }, [gameState?.round?.phase, gameState?.round?.winner_user_id, gameState?.players, roundWinnerAnnouncement]);
 
-  // Show winner dialog when phase becomes finished
+  // Auto-resync when WebSocket reconnects
   useEffect(() => {
-    if (gameState?.round?.phase === 'finished' && gameState.round.winner_user_id) {
-      setShowWinnerDialog(true);
-    }
-  }, [gameState?.round?.phase, gameState?.round?.winner_user_id]);
+    if (!sessionId) return;
+    const unsub = socketManager.onReconnect(() => {
+      console.log('[Game] Socket reconnected, resyncing snapshot...');
+      fetchGameState(sessionId);
+    });
+    return unsub;
+  }, [sessionId]);
+
+  // Auto-resync when returning to the tab
+  useEffect(() => {
+    if (!sessionId) return;
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchGameState(sessionId);
+      }
+    };
+    window.addEventListener('focus', handleVisibility);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', handleVisibility);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [sessionId]);
 
   // Check if we need to show the join modal
   useEffect(() => {
@@ -161,8 +187,20 @@ export function Game() {
   // Loading
   if (!gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base text-primary">
-        <p className="text-xl font-unbounded animate-pulse">Загрузка...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-base gap-6">
+        <div className="text-4xl font-black font-unbounded">
+          <span className="text-white">MEME</span>
+          <span className="shimmer-text-green">BATTLE</span>
+        </div>
+        <div className="flex gap-2">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="w-3 h-3 rounded-full bg-primary"
+              style={{ animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite` }}
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -203,9 +241,10 @@ export function Game() {
       </aside>
 
       <RoundWinnerDialog 
-        isOpen={showWinnerDialog} 
-        onClose={() => setShowWinnerDialog(false)}
-        winnerName={winnerName}
+        isOpen={!!roundWinnerAnnouncement} 
+        onClose={clearRoundWinnerAnnouncement}
+        winnerName={roundWinnerAnnouncement?.winnerName}
+        roundNumber={roundWinnerAnnouncement?.roundNumber}
       />
     </div>
   );

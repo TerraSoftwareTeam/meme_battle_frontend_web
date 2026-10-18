@@ -1,4 +1,4 @@
-import { GameDto, RoundDto } from '@/api/types';
+import { GameDto, RoundDto, ActiveGamesResponseDto } from '@/api/types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -27,13 +27,18 @@ export function GameInfoSidebar({ game, round }: GameInfoSidebarProps) {
       useGameStore.getState().clear();
       // Invalidate active game cache so the guard doesn't redirect back
       queryClient.setQueryData(['active-game'], null);
+      queryClient.setQueryData<ActiveGamesResponseDto>(['lobbies'], (old) => {
+        if (!old?.games) return old;
+        return { ...old, games: old.games.filter(g => g.id !== game.id) };
+      });
+      queryClient.invalidateQueries({ queryKey: ['lobbies'] });
       navigate('/');
     }
   };
 
   return (
     <div className="flex flex-col gap-4 h-full">
-      <h2 className="text-xl text-primary-shadow">
+      <h2 className="text-lg font-bold font-unbounded text-white">
         {game.name ?? 'Лобби'}
       </h2>
 
@@ -46,10 +51,10 @@ export function GameInfoSidebar({ game, round }: GameInfoSidebarProps) {
           <span className="text-text-secondary">Статус:</span>
           <span className="text-primary font-semibold capitalize">{game.status}</span>
         </div>
-        {round && (
+        {game.max_rounds && (
           <div className="flex justify-between">
-            <span className="text-text-secondary">Раунд:</span>
-            <span className="font-bold text-primary">{round.round_number}</span>
+            <span className="text-text-secondary">Раундов:</span>
+            <span className="font-bold">{round ? `${round.round_number} / ${game.max_rounds}` : game.max_rounds}</span>
           </div>
         )}
       </Card>
