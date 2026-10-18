@@ -36,9 +36,6 @@ export function GameFinishedPhase() {
         <h2 className={`text-4xl sm:text-5xl font-black font-unbounded leading-tight px-2 ${amIWinner ? 'shimmer-text' : 'text-white'}`}>
           {amIWinner ? 'ВЫ ПОБЕДИЛИ!' : `ПОБЕДИЛ\n${winner?.handle || 'Аноним'}!`}
         </h2>
-        {!amIWinner && (
-          <p className="text-text-secondary text-sm">В следующий раз повезёт</p>
-        )}
       </motion.div>
 
       {/* Leaderboard */}
@@ -72,7 +69,6 @@ export function GameFinishedPhase() {
                       {p.handle || 'Аноним'}
                       {isMe && <span className="ml-2 text-xs text-text-secondary font-normal">(Вы)</span>}
                     </span>
-                    {isFirst && <span className="text-xs text-warning/80 font-bold uppercase tracking-wider">Победитель</span>}
                   </div>
                 </div>
                 <div className={`text-2xl font-black font-unbounded ${isFirst ? 'text-warning' : 'text-white'}`}>
@@ -95,7 +91,7 @@ export function GameFinishedPhase() {
           size="lg"
           variant="primary"
           onClick={handleLeave}
-          className="w-full h-14 text-lg"
+          className="w-full h-14 text-lg font-bold !text-[#16151A]"
         >
           В главное меню
         </Button>

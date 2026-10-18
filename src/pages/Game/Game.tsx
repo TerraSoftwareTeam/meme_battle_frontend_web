@@ -238,12 +238,16 @@ export function Game() {
     }
   };
 
+  const isGameFinished = gameState.game.status === 'finished';
+
   return (
     <div className="min-h-screen bg-base text-primary flex flex-col md:flex-row overflow-hidden">
-      {/* Левая панель - Игроки */}
-      <aside className="w-full md:w-64 lg:w-72 border-b md:border-b-0 md:border-r border-border bg-surface p-4 flex flex-col shrink-0">
-        <PlayersSidebar players={gameState.players} game={gameState.game} round={gameState.round} />
-      </aside>
+      {/* Левая панель - Игроки (скрыта в конце матча, чтобы не дублировать список) */}
+      {!isGameFinished && (
+        <aside className="w-full md:w-64 lg:w-72 border-b md:border-b-0 md:border-r border-border bg-surface p-4 flex flex-col shrink-0">
+          <PlayersSidebar players={gameState.players} game={gameState.game} round={gameState.round} />
+        </aside>
+      )}
 
       {/* Центральная зона - Текущая фаза */}
       <main className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-y-auto">

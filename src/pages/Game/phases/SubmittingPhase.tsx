@@ -117,10 +117,10 @@ export function SubmittingPhase() {
                   relative flex flex-col items-center justify-center
                   ${isSituation ? 'w-[45%] min-w-[130px] max-w-[210px]' : 'w-[28%] min-w-[95px] max-w-[145px]'}
                   aspect-[3/4] rounded-2xl border-2 overflow-hidden
-                  transition-all duration-150 focus:outline-none cursor-pointer
+                  transition-colors duration-150 focus:outline-none cursor-pointer
                   ${isSelected
-                    ? 'border-primary ring-2 ring-primary/40 bg-elevated -translate-y-1'
-                    : 'border-border bg-surface hover:border-text-secondary/40 hover:-translate-y-0.5'
+                    ? 'border-primary bg-elevated'
+                    : 'border-border bg-surface hover:border-text-secondary/50'
                   }
                 `}
               >
@@ -129,21 +129,6 @@ export function SubmittingPhase() {
                 ) : (
                   <div className="p-3 w-full h-full overflow-y-auto hide-scrollbar flex items-center justify-center text-center text-xs sm:text-sm font-semibold leading-relaxed text-white">
                     {card.text}
-                  </div>
-                )}
-
-                {/* Selected Check Badge */}
-                {isSelected && (
-                  <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary text-[#16151A] flex items-center justify-center shadow-md pointer-events-none">
-                    <Check size={14} strokeWidth={3} />
-                  </div>
-                )}
-
-                {isSelected && (
-                  <div className="absolute bottom-2 left-0 right-0 flex justify-center z-10 pointer-events-none">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 bg-primary text-[#16151A] rounded-full shadow-sm">
-                      Выбрано
-                    </span>
                   </div>
                 )}
               </motion.button>

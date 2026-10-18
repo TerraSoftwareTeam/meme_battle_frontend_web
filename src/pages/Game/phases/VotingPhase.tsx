@@ -99,14 +99,14 @@ export function VotingPhase() {
                   relative flex flex-col items-center justify-center
                   ${isSituation ? 'w-[45%] min-w-[140px] max-w-[260px]' : 'w-[42%] min-w-[120px] max-w-[190px]'}
                   aspect-[3/4] rounded-2xl border-2 overflow-hidden
-                  transition-all duration-150 focus:outline-none
+                  transition-colors duration-150 focus:outline-none
                   ${isSelected
-                    ? 'border-primary ring-2 ring-primary/40 bg-elevated -translate-y-1'
+                    ? 'border-primary bg-elevated'
                     : sub.is_mine
                       ? 'border-border/30 bg-elevated/40 opacity-50 cursor-not-allowed'
                       : round.has_voted
                         ? 'border-border/40 bg-elevated/60 cursor-default'
-                        : 'border-border bg-surface hover:border-text-secondary/40 hover:-translate-y-0.5 cursor-pointer'
+                        : 'border-border bg-surface hover:border-text-secondary/50 cursor-pointer'
                   }
                 `}
               >
@@ -156,15 +156,6 @@ export function VotingPhase() {
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none rounded-[14px]">
                     <span className="text-white font-bold text-xs sm:text-sm px-3 py-1.5 bg-black/50 rounded-full border border-white/20">
                       Ваш ответ
-                    </span>
-                  </div>
-                )}
-
-                {/* Voted label */}
-                {isSelected && round.has_voted && (
-                  <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none z-10">
-                    <span className="text-primary font-bold bg-black/80 px-2.5 py-0.5 rounded-full text-xs">
-                      Ваш выбор
                     </span>
                   </div>
                 )}
