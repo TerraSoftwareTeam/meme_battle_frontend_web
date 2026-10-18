@@ -64,12 +64,12 @@ export function PlayersSidebar({ players, game, round }: PlayersSidebarProps) {
                 </span>
               )}
               {showSubmitted && (
-                <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-secondary/20 text-secondary border border-secondary/30" title="Ответил">
+                <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary border border-primary/30" title="Ответил">
                   <Check size={14} strokeWidth={3} />
                 </div>
               )}
               {showVoted && (
-                <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-warning/20 text-warning border border-warning/30" title="Проголосовал">
+                <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary border border-primary/30" title="Проголосовал">
                   <Check size={14} strokeWidth={3} />
                 </div>
               )}
